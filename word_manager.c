@@ -11,9 +11,11 @@ void parse_file(char *word_list, int list_size, int word_size) {
 
     for (int i = 0; i < list_size; i++) {
         fgets(word, word_size, f_ptr);
-        for (int j = 0; j < word_size - 1; j++) {
+        // printf("%s\n", word);
+        
+        for (int j = 0; j < word_size; j++) {
             if (word[j] == '\n') {
-                word_list[i * word_size + j] = EOF;
+                word_list[i * word_size + j] = 0x0;
             } else {
                 word_list[i * word_size + j] = word[j];
             }

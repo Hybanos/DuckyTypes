@@ -1,38 +1,27 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
 #include <termios.h>
-#include <time.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "word_manager.h"
-
-#define _XOPEN_SOURCE 700
- 
-int getkey() {
-    int character;
-    struct termios orig_term_attr;
-    struct termios new_term_attr;
-
-    /* set the terminal to raw mode */
-    tcgetattr(fileno(stdin), &orig_term_attr);
-    memcpy(&new_term_attr, &orig_term_attr, sizeof(struct termios));
-    new_term_attr.c_lflag &= ~(ECHO|ICANON);
-    new_term_attr.c_cc[VTIME] = 0;
-    new_term_attr.c_cc[VMIN] = 0;
-    tcsetattr(fileno(stdin), TCSANOW, &new_term_attr);
-
-    /* read a character from the stdin stream without blocking */
-    /*   returns EOF (-1) if no character is available */
-    character = fgetc(stdin);
-
-    /* restore the original terminal attributes */
-    tcsetattr(fileno(stdin), TCSANOW, &orig_term_attr);
-
-    return character;
-}
-
+#include "screen_manager.h"
 
 int main() {
+
+    char c;
+    struct termios new_kbd_mode;
+    struct termios g_old_kbd_mode;
+
+    tcgetattr (0, &g_old_kbd_mode);
+    memcpy (&new_kbd_mode, &g_old_kbd_mode, sizeof (struct termios));
+
+    new_kbd_mode.c_lflag &= ~(ICANON | ECHO);
+    new_kbd_mode.c_cc[VTIME] = 0;
+    new_kbd_mode.c_cc[VMIN] = 1;
+    tcsetattr (0, TCSANOW, &new_kbd_mode);
+
+
 
     srand(time(NULL));
 
@@ -42,26 +31,47 @@ int main() {
     char word_list[LIST_SIZE][WORD_SIZE];
     parse_file(word_list, LIST_SIZE, WORD_SIZE);
 
-    char random_words[10][WORD_SIZE];
-    select_random_words(word_list, LIST_SIZE, random_words, 10, WORD_SIZE);
+    char random_words[50][WORD_SIZE];
+    select_random_words(word_list, LIST_SIZE, random_words, 30, WORD_SIZE);
 
-    for (int i = 0; i < 50; i++) {
-        printf("%s\n", random_words[i]);
 
-        char word[100];
-        int word_ptr = 0;
 
-        int key;
+    char word[100];
+    int word_ptr = 0;
+    for (int i = 0; i < 30; i++) {
+        clear_screen();
+        for (int i = 0; i < 5; i++) {
+            printf("%s", random_words[i]);
+        }
+        printf("\n");
 
-        while (1) {
-            key = getkey();
-            if (key == 0x1B || key == 0x04 || key == ' ' || key == 'j') {
-                return 0;
+
+
+        for (int i = 0; i < WORD_SIZE; i++) {
+            word[i] = 0;
+        }
+        word_ptr = 0;
+        c = -1;
+        while (c != 32) {
+
+
+            read(0, &c, 1);
+
+            if ((int)c == 127) {
+                word_ptr -= 1;
+                word[word_ptr] = 0;
             } else {
-                printf("%d\n", key);
+                word[word_ptr] = c;
+                word_ptr += 1;
             }
+
+            printf("%s", word);
+            reset_line();
+        
         }
     }
 
+
+    tcsetattr (0, TCSANOW, &g_old_kbd_mode);
     return EXIT_SUCCESS;
 }
