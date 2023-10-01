@@ -8,7 +8,7 @@ build_test : test.o word_manager.o screen_manager.o
 
 all : build clean run
 
-build : test.o
+build : main.o word_manager.o screen_manager.o
 	$(CC) $(CFLAGS) -o out $^
 
 run : 
