@@ -27,7 +27,7 @@ int main() {
 
     int const LIST_SIZE = 1500;
     int const WORD_SIZE = 100;
-    int const TEST_LENGTH = 10;
+    int const TEST_LENGTH = 30;
 
     char word_list[LIST_SIZE][WORD_SIZE];
     parse_file(word_list, LIST_SIZE, WORD_SIZE);
@@ -51,7 +51,7 @@ int main() {
 
     int start_time;
 
-    while (1) {
+    while (!test_done) {
         
         if (word_ptr == 1) start_time = (int) time(0);
 
@@ -71,7 +71,8 @@ int main() {
         }
         test_string[test_string_ptr] = 0;
 
-        clear_screen();
+        // clear_screen();
+        goto_origin();
     
         /* SPELL CHECKER */
         for (int i = 0; i < WORD_SIZE * TEST_LENGTH; i ++) {
@@ -87,6 +88,13 @@ int main() {
                 continue;
             }
 
+            if (i == word_ptr) {
+                rgb_background(90, 90, 90);
+            } else {
+                // reset_background();
+                reset_color();
+            }
+
             if (i < word_ptr) {
                 if (current != 0 & current != 4 && current != 13) {
                     if (expected == current) {
@@ -97,14 +105,9 @@ int main() {
                 }
 
             } else {
-                reset_color();
+                rgb_text(255, 255, 255);
             }
 
-            if (i == word_ptr) {
-                rgb_background(90, 90, 90);
-            } else {
-                reset_background();
-            }
 
             printf("%c", expected);
         }
@@ -130,30 +133,30 @@ int main() {
             word[word_ptr] = c;
             word_ptr += 1;
         }
-        
-        if (test_done) break;
     }
     reset_color();
 
     int dt = ((int) time(0)) - start_time;
-    int wpm = strlen(word) / 5 * 60 / dt;
+    int raw = strlen(word) / 5 * 60 / dt;
 
     int errors = 0;
     for (int i = 0; i < strlen(word) - 1; i++) {
         if (word[i] != test_string[i]) errors += 1; 
     }
 
-    float accuracy = 0;
-    if (errors != 0) {
-        accuracy = (errors / strlen(word)) * 100;
+    int accuracy = 0;
+    if (errors) {
+        accuracy = 100 - (float) errors /  strlen(word) * 100;
     }
     else {
         accuracy = 100;
     }
+    int wpm = raw * accuracy / 100;
 
-    printf("%i seconds, %i wpm\n", dt, wpm);
-    printf("%i typos, (%f accuracy)\n", errors, accuracy);
+    printf("Done in %d seconds!\n", dt);
+    printf("%i Words per minute, (%i raw)\n", wpm, raw);
+    printf("%i typos, (%d%% accuracy)\n", errors, accuracy);
 
-    tcsetattr (0, TCSANOW, &g_old_kbd_mode);
+    tcsetattr(0, TCSANOW, &g_old_kbd_mode);
     return EXIT_SUCCESS;
 }

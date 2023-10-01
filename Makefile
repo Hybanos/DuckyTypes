@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Wall -Wextra -pedantic -ggdb -Wmultichar
+CFLAGS := -Wall -Wextra -pedantic -ggdb -Wmultichar -fno-stack-protector
 
 test : build_test clean run
 
