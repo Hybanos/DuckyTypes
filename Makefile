@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Wall -Wextra -pedantic -ggdb -Wmultichar -fno-stack-protector
+CFLAGS := -Wall -Wextra -pedantic -ggdb -Wmultichar -g
 
 test : build_test clean run
 
@@ -8,11 +8,11 @@ build_test : test.o word_manager.o screen_manager.o
 
 all : build clean run
 
-build : main.o word_manager.o screen_manager.o
-	$(CC) $(CFLAGS) -o out $^
+build : main.o word_manager.o screen_manager.o game_loop.o
+	$(CC) $(CFLAGS) -o duckytypes $^
 
 run : 
-	./out
+	./duckytypes
 
 clean :
 	rm *.o

@@ -1,5 +1,8 @@
-#include <stdio.h>
+#ifndef STD_H
+#define STD_H
 #include <stdlib.h>
+#include <stdio.h>
+#endif
 
 #include "word_manager.h"
 
@@ -7,7 +10,7 @@ void parse_file(char *word_list, int list_size, int word_size) {
     FILE *f_ptr;
     f_ptr = fopen("words_fr.txt", "r");
     
-    char word[word_size];
+    char *word = calloc(word_size, 1);
 
     for (int i = 0; i < list_size; i++) {
         fgets(word, word_size, f_ptr);
@@ -22,6 +25,7 @@ void parse_file(char *word_list, int list_size, int word_size) {
         }
     }
 
+    free(word);
     fclose(f_ptr);
 }
 

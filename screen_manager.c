@@ -1,5 +1,8 @@
-#include <stdio.h>
+#ifndef STD_H
+#define STD_H
 #include <stdlib.h>
+#include <stdio.h>
+#endif
 
 #include "screen_manager.h"
 
@@ -13,11 +16,6 @@ void goto_origin() {
 
 void reset_line() {
     printf("\n\r\33[A\33[2K");
-
-    // printf("\n");       // new line
-    // printf("\r");    // carriage return
-    // printf("\33[A");   // cursor up
-    // printf("\33[2K");   // delete line
 }
 
 void reset_color() {
