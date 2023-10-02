@@ -20,3 +20,8 @@ void prep_console(struct termios *new_kbd_mode, struct termios *g_old_kbd_mode) 
 void reset_console(struct termios *g_old_kbd_mode) {
     tcsetattr(0, TCSANOW, g_old_kbd_mode);
 }
+
+void main_loop() {
+
+}
+

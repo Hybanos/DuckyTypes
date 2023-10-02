@@ -6,11 +6,14 @@
 #include <string.h>
 #include <time.h>
 
+#include "constants.h"
+
 #include "word_manager.h"
 #include "screen_manager.h"
 #include "game_loop.h"
 
 int main() {
+
 
     struct termios new_kbd_mode;
     struct termios g_old_kbd_mode;
@@ -18,19 +21,20 @@ int main() {
 
     srand(time(NULL));
 
-    int const LIST_SIZE = 1000;
-    int const WORD_SIZE = 100;
-    int const TEST_LENGTH = 20;
-
     char *word_list = calloc(LIST_SIZE, WORD_SIZE);
     parse_file(word_list, LIST_SIZE, WORD_SIZE);
 
     char *random_words = calloc(TEST_LENGTH, WORD_SIZE);
     select_random_words(word_list, LIST_SIZE, random_words, TEST_LENGTH, WORD_SIZE);
 
+    // typedef struct testData data;
+    struct testData data;
+
+    memcpy(data.test_data, random_words, sizeof(data.test_data));
+
     char *word = calloc(TEST_LENGTH, WORD_SIZE);
     int word_ptr = 0;
-    char *test_string = calloc(WORD_SIZE, TEST_LENGTH);
+    char *test_string = calloc(TEST_LENGTH, WORD_SIZE);
     int test_string_ptr = 0;
     int test_done = 0;
     char c = -1;
@@ -66,7 +70,7 @@ int main() {
             char expected = test_string[i];
             char current = word[i];
 
-            if (expected == 0 && word_ptr >= i) test_done = 1;
+            if (expected == 0 && word_ptr >= i ) test_done = 1;
             if (expected == 0) break;
 
             if ((0b11000000 & test_string[i]) == 0b10000000 ) {
@@ -82,7 +86,7 @@ int main() {
             }
 
             if (i < word_ptr) {
-                if (current != 0 & current != 4 && current != 13) {
+                if (current != 0 && current != 4 && current != 13) {
                     if (expected == current) {
                         rgb_text(150, 150, 150);
                     } else {
@@ -99,6 +103,7 @@ int main() {
         reset_color();
         printf("\n");
 
+        if (test_done) break;
 
         read(0, &c, 1);
 
@@ -124,7 +129,7 @@ int main() {
     int raw = strlen(word) / 5 * 60 / dt;
 
     int errors = 0;
-    for (int i = 0; i < strlen(word) - 1; i++) {
+    for (int i = 0; i < (int) strlen(word) - 1; i++) {
         if (word[i] != test_string[i]) errors += 1; 
     }
 
