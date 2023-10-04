@@ -1,6 +1,6 @@
 #include "consts.h"
 
-#include <termios.h>
+// #include <termios.h>
 
 struct testData {
     char word[WORD_SIZE * TEST_LENGTH];
@@ -22,5 +22,3 @@ struct testResult {
 void prep_console(struct termios *, struct termios *);
 void reset_console(struct termios *);
 void main_loop(struct testData *, struct testResult *);
-void display_results(struct testResult *);
-void display_abort();

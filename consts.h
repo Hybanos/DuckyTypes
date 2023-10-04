@@ -5,9 +5,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <time.h>
+#include <sys/ioctl.h>
+#include <ctype.h>
 
 #define WORD_SIZE 100
-#define TEST_LENGTH 20
+#define TEST_LENGTH 25
 #define LIST_SIZE 1500
 
 #define TEST_END 1

@@ -1,6 +1,7 @@
 #include "consts.h"
 
 #include "game_loop.h"
+#include "screen_manager.h"
 
 void prep_console(struct termios *new_kbd_mode, struct termios *g_old_kbd_mode) {
     tcgetattr (0, g_old_kbd_mode);
@@ -20,11 +21,27 @@ int get_next_space(struct testData *data, int word_ptr) {
     for (int i = word_ptr; i < strlen(data->test_string); i++) {
         if (data->test_string[i] == 32) return i;
     }
+    return strlen(data->test_string);
+}
+
+int get_prev_space(struct testData *data, int word_ptr) {
+    for (int i = word_ptr - 1; i > 0; i--) {
+        if (data->test_string[i] == 32 && word_ptr-1 != i) return i;
+    }
+    return -1;
+}
+
+int count_char(char *string, char c) {
+    int cpt = 0;
+    for (int i = 0; i < strlen(string); i ++) {
+        if (string[i] == c) cpt += 1;
+    }
+    return cpt;
 }
 
 void main_loop(struct testData *data, struct testResult *res) {
     int word_ptr = 0;
-    int test_string_ptr = 0;
+    int test_string_ptr = -1;
     int test_done = 0;
     char c = -1;
     res->success_code = TEST_END;
@@ -32,24 +49,27 @@ void main_loop(struct testData *data, struct testResult *res) {
     clear_screen();
     res->start_time = time(0);
 
-    while (!test_done) {
-        if (word_ptr == 1) res->start_time = (long) time(0);
-        test_string_ptr = -1;
-
-        /* TEST STRING BUILDING */
-        for (int i = 0; i < TEST_LENGTH; i ++) {
-            for (int j = 0; j < WORD_SIZE; j++) {
-                test_string_ptr += 1;
-                char curr = data->test_data[i * WORD_SIZE + j];
-                if (curr == 0 || curr == 4 || curr == 13) {
-                    data->test_string[test_string_ptr] = 32;
-                    break;
-                }
-                data->test_string[test_string_ptr] = curr;
+    /* TEST STRING BUILDING */
+    for (int i = 0; i < TEST_LENGTH; i ++) {
+        for (int j = 0; j < WORD_SIZE; j++) {
+            test_string_ptr += 1;
+            char curr = data->test_data[i * WORD_SIZE + j];
+            if (curr == 0 || curr == 4 || curr == 13) {
+                data->test_string[test_string_ptr] = 32;
+                break;
             }
+            data->test_string[test_string_ptr] = curr;
         }
+    }
 
-        data->test_string[test_string_ptr] = 0;
+    data->test_string[test_string_ptr] = 0;
+
+    char *display_word = malloc(WORD_SIZE * TEST_LENGTH * 50);
+
+    while (!test_done) {
+        memset(display_word, 0, sizeof(display_word));
+
+        if (word_ptr == 1) res->start_time = (long) time(0);
         goto_origin();
     
         /* SPELL CHECKER */
@@ -62,64 +82,78 @@ void main_loop(struct testData *data, struct testResult *res) {
             if (expected == 0) break;
 
             if ((0b11000000 & expected) == 0b10000000 ) {
-                printf("%c", expected);
+                int len = strlen(display_word);
+                display_word[len] = expected;
+                display_word[len + 1] = 0;
                 continue;
             }
 
-            if (i == word_ptr) rgb_background(90, 90, 90);
-            else reset_color();
-            
+            if (i == word_ptr) strcat(display_word, "\33[48;2;90;90;90m");
+            else strcat(display_word, "\33[0m");
+
             if (i < word_ptr) {
                 if (current != 0 && current != 4 && current != 13) {
                     if (expected == current) {
-                        rgb_text(150, 150, 150);
+                        // strcat(display_word, "\33[38;2;150;150;150m");
+                        strcat(display_word, "\33[1;30m");
                     } else {
-                        rgb_text(200, 50, 50);
+                        strcat(display_word, "\33[38;2;200;50;50m");
                     }
                 }
 
-            } else rgb_text(255, 255, 255);
-            
-            printf("%c", expected);
+            } 
+            if (i == word_ptr) {strcat(display_word, "\33[38;2;255;255;255m");}
+
+            int len = strlen(display_word);
+            display_word[len] = expected;
+            display_word[len + 1] = 0;
+
         }
-        reset_color();
-        printf("\n");
+        // strcat(display_word, "\n");
+        display_test(display_word);
 
         if (test_done) break;
-
         read(0, &c, 1);
 
         /* PARSE WRITTEN */
         switch (c) {
-        case 27: // ESCAPE
-            res->success_code = TEST_ABORT;
-            return;
+            case 27: // ESCAPE
+                res->success_code = TEST_ABORT;
+                free(display_word);
+                return;
 
-        case 127: // BACKSPACE
-            if ((0b11000000 & data->word[word_ptr - 1]) == 0b010000000) word_ptr -= 2;
-            else word_ptr -= 1;
-            break;    
+            case 127: // BACKSPACE
+                if (!word_ptr) break;
+                if ((0b11000000 & data->word[word_ptr - 1]) == 0b010000000) word_ptr -= 2;
+                else word_ptr -= 1;
+                break;    
 
-        case 9: // TAB
-            res->success_code = TEST_RESTART;
-            return;   
+            case 9: // TAB
+                res->success_code = TEST_RESTART;
+                free(display_word);
+                return;   
 
-        case 32:
-            for (int i = word_ptr; i < get_next_space(data, word_ptr); i++) {
-                data->word[word_ptr] = 32;
+            case 32: // SPACE
+                for (int i = word_ptr; i < get_next_space(data, word_ptr); i++) {
+                    data->word[word_ptr] = c;
+                    word_ptr += 1;
+                }
+                data->word[word_ptr] = c;
                 word_ptr += 1;
-            }
+                break;
 
-        default:
-            data->word[word_ptr] = c;
-            word_ptr += 1;
+            case 8: // CTRL + BACKSPACE
+                word_ptr = get_prev_space(data, word_ptr) + 1;
+                break;
+                
+            default:
+                data->word[word_ptr] = c;
+                word_ptr += 1;
         }
-
     }
-
+    free(display_word);
     calculate_results(data, res);
     res->success_code = TEST_END;
-    reset_color();
 }
 
 void calculate_results(struct testData *data, struct testResult *res) {
@@ -129,12 +163,12 @@ void calculate_results(struct testData *data, struct testResult *res) {
 
     res->errors = 0;
     for (int i = 0; i < (int) strlen(data->word) - 1; i++) {
-        if (data->word[i] != data->test_string[i]) res->errors += 1; 
+        if (data->word[i] != data->test_string[i] && data->test_string[i] != 32) res->errors += 1;
     }
 
     res->accuracy = 0;
     if (res->errors) {
-        res->accuracy = 100 - (float) res->errors /  strlen(data->word) * 100;
+        res->accuracy = 100 - (float) res->errors /  (strlen(data->word) - count_char(data->test_string, ' ')) * 100;
     }
     else {
         res->accuracy = 100;
@@ -142,12 +176,3 @@ void calculate_results(struct testData *data, struct testResult *res) {
     res->wpm = res->raw_wpm * res->accuracy / 100;
 }
 
-void display_results(struct testResult *res) {
-    printf("Done in %ld seconds!\n", res->dt);
-    printf("%i Words per minute, (%i raw)\n", res->wpm, res->raw_wpm);
-    printf("%i typos, (%d%% accuracy)\n", res->errors, res->accuracy);
-}
-
-void display_abort() {
-    printf("Test Aborted\n");
-}
