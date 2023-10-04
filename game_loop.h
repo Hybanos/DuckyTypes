@@ -21,5 +21,6 @@ struct testResult {
 
 void prep_console(struct termios *, struct termios *);
 void reset_console(struct termios *);
-void main_loop(struct testData, struct testResult);
-void display_results(struct testResult);
+void main_loop(struct testData *, struct testResult *);
+void display_results(struct testResult *);
+void display_abort();

@@ -1,10 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-
-#include <termios.h>
-#include <unistd.h>
-#include <string.h>
-#include <time.h>
 
 #include "consts.h"
 
@@ -23,11 +16,22 @@ int main() {
     struct testData data;
     char *word_list = calloc(LIST_SIZE, WORD_SIZE);
     parse_file(word_list, LIST_SIZE, WORD_SIZE);
-    select_random_words(word_list, LIST_SIZE, data.test_data, TEST_LENGTH, WORD_SIZE);
-
     struct testResult res;
-    main_loop(data, res);
-    display_results(res);
+
+    do {
+        select_random_words(word_list, LIST_SIZE, data.test_data, TEST_LENGTH, WORD_SIZE);
+        main_loop(&data, &res);
+    } while (res.success_code == TEST_RESTART);
+
+    switch (res.success_code) {
+        case TEST_ABORT:
+            display_abort();
+            break;
+
+        case TEST_END:
+            display_results(&res);
+            break;    
+    }
 
     free(word_list);
     reset_console(&g_old_kbd_mode);
