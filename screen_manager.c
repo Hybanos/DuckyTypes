@@ -24,7 +24,7 @@ void rgb_background(int r, int g, int b) {
     printf("\33[48;2;%d;%d;%dm", r, g, b);
 }
 
-char* mult_ch(char c, int n) {
+void mult_ch(char c, int n) {
     for (int i = 0; i < n; i++) {
         printf("%c", c);
     }
@@ -51,6 +51,7 @@ void display_test(char *str) {
     int out_index = 0;
 
     int curr_spaces = 0;
+    int curr_line = 0;
 
     for (int i = 0; i < top_spacing; i++) {
         strcat(output, "\n");
@@ -63,6 +64,10 @@ void display_test(char *str) {
         out_index += 4;
         out_index += side_spacing;
         curr_spaces = 0;
+        for (int i = 0; i < curr_line; i++) {
+            strcat(output, " ");
+            out_index += 1;
+        }
         while (curr_spaces < wpl) {
             if (str_index >= strlen(str)) break;
             output[out_index] = str[str_index];
@@ -75,6 +80,7 @@ void display_test(char *str) {
         if (str_index >= strlen(str)) break;
         strcat(output, "\n");
         out_index += 1;
+        curr_line += 1;
     }
 
     for (int i = 0; i < top_spacing / 2; i++) {

@@ -8,7 +8,7 @@ build_test : test.o word_manager.o screen_manager.o
 
 all : build clean run
 
-build : main.o word_manager.o screen_manager.o game_loop.o 
+build : main.o word_manager.o screen_manager.o game_loop.o config.o
 	$(CC) $(CFLAGS) -o duckytypes $^
 
 run : 

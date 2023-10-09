@@ -39,6 +39,35 @@ int count_char(char *string, char c) {
     return cpt;
 }
 
+void test(struct testData *data, struct testResult *res, char *word_list) {
+
+    char c = 0;
+
+    while (1) {
+        do {
+            select_random_words(word_list, LIST_SIZE, data->test_data, TEST_LENGTH, WORD_SIZE);
+            printf(word_list);
+            main_loop(data, res);
+        } while (res->success_code == TEST_RESTART);
+
+        switch (res->success_code) {
+            case TEST_ABORT:
+                display_abort();
+                return;
+
+            case TEST_END:
+                display_results(res);
+                break;
+        }
+
+        while (1) {
+            read(0, &c, 1);
+            if (c == 27) return;
+            if (c == 9) break;
+        }
+    }
+}
+
 void main_loop(struct testData *data, struct testResult *res) {
     int word_ptr = 0;
     int test_string_ptr = -1;
@@ -134,6 +163,7 @@ void main_loop(struct testData *data, struct testResult *res) {
                 return;   
 
             case 32: // SPACE
+                if (data->word[word_ptr - 1] == ' ') break;
                 for (int i = word_ptr; i < get_next_space(data, word_ptr); i++) {
                     data->word[word_ptr] = c;
                     word_ptr += 1;
