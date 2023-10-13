@@ -10,8 +10,6 @@ void parse_file(char *word_list, struct sconfig *config) {
     strcat(full_path, config->path);
     strcat(full_path, config->file_name);
 
-    printf("words : %s\n\n", full_path);
-
     FILE *f_ptr;
     f_ptr = fopen(full_path, "r");
     free(full_path);
@@ -20,7 +18,6 @@ void parse_file(char *word_list, struct sconfig *config) {
 
     for (int i = 0; i < config->list_size; i++) {
         fgets(word, config->word_size, f_ptr);
-        // printf("%s\n", word);
         
         for (int j = 0; j < config->word_size; j++) {
             if (word[j] == '\n') {

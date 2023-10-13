@@ -3,29 +3,27 @@
 #include "config.h"
 #include "consts.h"
 
-char * get_path(struct sconfig *config) {
-    char *path = calloc(sizeof(char), 255);
-    readlink("/proc/self/exe", path, 255);
+void get_path(struct sconfig *config) {
+    config->path = calloc(sizeof(char), 255);
+    readlink("/proc/self/exe", config->path, 255);
 
-    for (int i = strlen(path); i > 0; i --) {
-        if (path[i - 1] == '/') {
-            path[i] = 0;
+    for (int i = strlen(config->path); i > 0; i --) {
+        if (config->path[i - 1] == '/') {
+            config->path[i] = 0;
             break;
         }
     }
     
-    printf("path : %s\n\n", path);
-    config->path = path;
     config->config_path = calloc(sizeof(char), 255);
     strcat(config->config_path, config->path);
     strcat(config->config_path, "config.conf");
-    return path;
+    printf("%s\n", config->path);
 }
 
 void create_config(struct sconfig *config) {
     FILE *fptr;
 
-    fptr = fopen(config->path, "w");
+    fptr = fopen(config->config_path, "w");
     fprintf(fptr, "# File to read words from.\n");
     fprintf(fptr, "word_list_file=words_fr.txt\n\n");
 
@@ -65,7 +63,6 @@ void parse_config(struct sconfig *config) {
 
     while (!feof(fptr)) {
         fgets(buff, 255, fptr);
-        // printf(buff);
         if (buff[0] == '#' || strlen(buff) < 4) continue;
     
         if (strstr(buff, "word_list_file")) read_str(buff, config->file_name);
