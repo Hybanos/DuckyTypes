@@ -1,22 +1,32 @@
 #include "consts.h"
 
+#include "config.h"
+#include "game_loop.h"
 #include "word_manager.h"
 
-void parse_file(char *word_list, int list_size, int word_size) {
-    FILE *f_ptr;
-    f_ptr = fopen("words_fr.txt", "r");
-    
-    char *word = calloc(word_size, 1);
+void parse_file(char *word_list, struct sconfig *config) {
+    char *full_path = calloc(sizeof(char), 255);
 
-    for (int i = 0; i < list_size; i++) {
-        fgets(word, word_size, f_ptr);
+    strcat(full_path, config->path);
+    strcat(full_path, config->file_name);
+
+    printf("words : %s\n\n", full_path);
+
+    FILE *f_ptr;
+    f_ptr = fopen(full_path, "r");
+    free(full_path);
+    
+    char *word = calloc(config->word_size, 1);
+
+    for (int i = 0; i < config->list_size; i++) {
+        fgets(word, config->word_size, f_ptr);
         // printf("%s\n", word);
         
-        for (int j = 0; j < word_size; j++) {
+        for (int j = 0; j < config->word_size; j++) {
             if (word[j] == '\n') {
-                word_list[i * word_size + j] = 0x0;
+                word_list[i * config->word_size + j] = 0x0;
             } else {
-                word_list[i * word_size + j] = word[j];
+                word_list[i * config->word_size + j] = word[j];
             }
         }
     }
@@ -25,12 +35,12 @@ void parse_file(char *word_list, int list_size, int word_size) {
     fclose(f_ptr);
 }
 
-void select_random_words(char *input_list, int input_size, char* output_list, int output_size, int word_size) {
-    for (int i = 0; i < output_size; i++) {
-        int index = rand() % input_size;
-        
-        for (int j = 0; j < word_size; j++) {
-            output_list[i * word_size + j] = input_list[index * word_size + j];
+void select_random_words(char *input_list, struct testData *data, struct sconfig *config) {
+    for (int i = 0; i < config->test_length; i++) {
+        int index = rand() % config->list_size;
+
+        for (int j = 0; j < config->word_size; j++) {
+            data->test_data[i * config->word_size + j] = input_list[index * config->word_size + j];
         }
     }
 }

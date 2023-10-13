@@ -1,7 +1,9 @@
 #include "consts.h"
 
+#include "config.h"
 #include "game_loop.h"
 #include "screen_manager.h"
+#include "word_manager.h"
 
 void prep_console(struct termios *new_kbd_mode, struct termios *g_old_kbd_mode) {
     tcgetattr (0, g_old_kbd_mode);
@@ -39,15 +41,16 @@ int count_char(char *string, char c) {
     return cpt;
 }
 
-void test(struct testData *data, struct testResult *res, char *word_list) {
+void test(struct testData *data, struct testResult *res, char *word_list, struct sconfig *config) {
 
     char c = 0;
 
     while (1) {
         do {
-            select_random_words(word_list, LIST_SIZE, data->test_data, TEST_LENGTH, WORD_SIZE);
+            select_random_words(word_list, data, config);
             printf(word_list);
-            main_loop(data, res);
+
+            main_loop(data, res, config);
         } while (res->success_code == TEST_RESTART);
 
         switch (res->success_code) {
@@ -56,7 +59,7 @@ void test(struct testData *data, struct testResult *res, char *word_list) {
                 return;
 
             case TEST_END:
-                display_results(res);
+                display_results(res, config);
                 break;
         }
 
@@ -68,21 +71,20 @@ void test(struct testData *data, struct testResult *res, char *word_list) {
     }
 }
 
-void main_loop(struct testData *data, struct testResult *res) {
+void main_loop(struct testData *data, struct testResult *res, struct sconfig *config) {
     int word_ptr = 0;
     int test_string_ptr = -1;
     int test_done = 0;
     char c = -1;
     res->success_code = TEST_END;
-
     clear_screen();
     res->start_time = time(0);
 
     /* TEST STRING BUILDING */
-    for (int i = 0; i < TEST_LENGTH; i ++) {
-        for (int j = 0; j < WORD_SIZE; j++) {
+    for (int i = 0; i < config->test_length; i ++) {
+        for (int j = 0; j < config->word_size; j++) {
             test_string_ptr += 1;
-            char curr = data->test_data[i * WORD_SIZE + j];
+            char curr = data->test_data[i * config->word_size + j];
             if (curr == 0 || curr == 4 || curr == 13) {
                 data->test_string[test_string_ptr] = 32;
                 break;
@@ -93,16 +95,16 @@ void main_loop(struct testData *data, struct testResult *res) {
 
     data->test_string[test_string_ptr] = 0;
 
-    char *display_word = malloc(WORD_SIZE * TEST_LENGTH * 50);
+    char *display_word = malloc(config->word_size * config->test_length * 50);
 
     while (!test_done) {
-        memset(display_word, 0, sizeof(display_word));
+        memset(display_word, 0, config->word_size * config->test_length * 50);
 
         if (word_ptr == 1) res->start_time = (long) time(0);
         goto_origin();
     
         /* SPELL CHECKER */
-        for (int i = 0; i < WORD_SIZE * TEST_LENGTH; i ++) {
+        for (int i = 0; i < config->word_size * config->test_length; i ++) {
 
             char expected = data->test_string[i];
             char current = data->word[i];
@@ -138,8 +140,7 @@ void main_loop(struct testData *data, struct testResult *res) {
             display_word[len + 1] = 0;
 
         }
-        // strcat(display_word, "\n");
-        display_test(display_word);
+        display_test(display_word, config);
 
         if (test_done) break;
         read(0, &c, 1);

@@ -1,3 +1,4 @@
+#include "config.h"
 #include "game_loop.h"
 
 void clear_screen() {
@@ -30,16 +31,17 @@ void mult_ch(char c, int n) {
     }
 }
 
-void display_test(char *str) {
+void display_test(char *str, struct sconfig *config) {
+
 
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    char *output = calloc(WORD_SIZE, TEST_LENGTH * 50);
+    char *output = calloc(config->word_size, config->test_length * 50);
 
     int average_letterspword = 6;
 
     int side_spacing =  0.25 * w.ws_col;
-    int top_spacing = (w.ws_row - TEST_LENGTH / average_letterspword) / 2;
+    int top_spacing = (w.ws_row - config->test_length / average_letterspword) / 2;
     int wpl = (w.ws_col - 2 * side_spacing) / average_letterspword;
 
     char *side = calloc(1, side_spacing);
