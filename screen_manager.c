@@ -33,7 +33,6 @@ void mult_ch(char c, int n) {
 
 void display_test(char *str, struct sconfig *config) {
 
-
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     char *output = calloc(config->word_size, config->test_length * 50);

@@ -48,7 +48,6 @@ void test(struct testData *data, struct testResult *res, char *word_list, struct
     while (1) {
         do {
             select_random_words(word_list, data, config);
-            printf(word_list);
 
             main_loop(data, res, config);
         } while (res->success_code == TEST_RESTART);
@@ -79,7 +78,6 @@ void main_loop(struct testData *data, struct testResult *res, struct sconfig *co
     res->success_code = TEST_END;
     clear_screen();
     res->start_time = time(0);
-
     /* TEST STRING BUILDING */
     for (int i = 0; i < config->test_length; i ++) {
         for (int j = 0; j < config->word_size; j++) {

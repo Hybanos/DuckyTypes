@@ -25,10 +25,7 @@ void create_config(struct sconfig *config) {
 
     fptr = fopen(config->config_path, "w");
     fprintf(fptr, "# File to read words from.\n");
-    fprintf(fptr, "word_list_file=words_fr.txt\n\n");
-
-    fprintf(fptr, "# Number of words to be selected from file.\n");
-    fprintf(fptr, "list_size=1500\n\n");
+    fprintf(fptr, "word_list_file=words/english_1k.txt\n\n");
 
     fprintf(fptr, "# Maximum size of words in bytes.\n");
     fprintf(fptr, "word_size=100\n\n");
@@ -67,7 +64,6 @@ void parse_config(struct sconfig *config) {
     
         if (strstr(buff, "word_list_file")) read_str(buff, config->file_name);
     
-        if (strstr(buff, "list_size")) config->list_size = read_int(buff);
         if (strstr(buff, "word_size")) config->word_size = read_int(buff);
         if (strstr(buff, "test_length")) config->test_length = read_int(buff);
     
