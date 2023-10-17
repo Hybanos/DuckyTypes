@@ -13,14 +13,18 @@ void prep_console(struct termios *new_kbd_mode, struct termios *g_old_kbd_mode) 
     new_kbd_mode->c_cc[VTIME] = 0;
     new_kbd_mode->c_cc[VMIN] = 1;
     tcsetattr(0, TCSANOW, new_kbd_mode);
+
+    hide_cursor();
 }
 
 void reset_console(struct termios *g_old_kbd_mode) {
     tcsetattr(0, TCSANOW, g_old_kbd_mode);
+
+    enable_cursor();
 }
 
 int get_next_space(struct testData *data, int word_ptr) {
-    for (int i = word_ptr; i < strlen(data->test_string); i++) {
+    for (int i = word_ptr; i < (int) strlen(data->test_string); i++) {
         if (data->test_string[i] == 32) return i;
     }
     return strlen(data->test_string);
@@ -35,7 +39,7 @@ int get_prev_space(struct testData *data, int word_ptr) {
 
 int count_char(char *string, char c) {
     int cpt = 0;
-    for (int i = 0; i < strlen(string); i ++) {
+    for (int i = 0; i < (int) strlen(string); i ++) {
         if (string[i] == c) cpt += 1;
     }
     return cpt;

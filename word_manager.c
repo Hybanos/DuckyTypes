@@ -9,10 +9,21 @@ char * parse_file(struct sconfig *config) {
     char *full_path = calloc(sizeof(char), 255);
 
     strcat(full_path, config->path);
+    strcat(full_path, "words/");
+
+    DIR *dir = opendir(full_path);
+    if (!dir) {
+        mkdir(full_path, 0700);
+    }
+
     strcat(full_path, config->file_name);
 
     FILE *f_ptr;
     f_ptr = fopen(full_path, "r");
+    if (!f_ptr) {
+        printf("couldn't find word file help\n");
+        exit(EXIT_FAILURE);
+    }
     free(full_path);
 
     int lines = 0;

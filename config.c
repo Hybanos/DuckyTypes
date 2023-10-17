@@ -16,8 +16,8 @@ void get_path(struct sconfig *config) {
     
     config->config_path = calloc(sizeof(char), 255);
     strcat(config->config_path, config->path);
-    strcat(config->config_path, "config.conf");
-    printf("%s\n", config->path);
+    strcat(config->config_path, "conf.conf");
+    // printf("%s\n", config->path);
 }
 
 void create_config(struct sconfig *config) {

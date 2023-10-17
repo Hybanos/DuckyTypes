@@ -7,6 +7,7 @@
 #include <time.h>
 #include <sys/ioctl.h>
 #include <ctype.h>
+#include <dirent.h>
 
 // #define LIST_SIZE 1500
 // #define WORD_SIZE 100

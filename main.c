@@ -12,7 +12,6 @@ int main() {
 
     struct termios new_kbd_mode;
     struct termios g_old_kbd_mode;
-    prep_console(&new_kbd_mode, &g_old_kbd_mode);
 
     srand(time(NULL));
     
@@ -24,11 +23,8 @@ int main() {
     char *word_list = parse_file(&config);
     struct testResult res;
 
-    
-
-    hide_cursor();
+    prep_console(&new_kbd_mode, &g_old_kbd_mode);
     test(&data, &res, word_list, &config);
-    enable_cursor();
 
     free(word_list);
     reset_console(&g_old_kbd_mode);

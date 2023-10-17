@@ -43,7 +43,7 @@ void display_test(char *str, struct sconfig *config) {
     int top_spacing = (w.ws_row - config->test_length / average_letterspword) / 2;
     int wpl = (w.ws_col - 2 * side_spacing) / average_letterspword;
 
-    char *side = calloc(1, side_spacing);
+    char *side = calloc(sizeof(char), side_spacing);
     for (int i = 0; i < side_spacing; i++) {
         strcat(side, " ");
     }
@@ -70,7 +70,7 @@ void display_test(char *str, struct sconfig *config) {
             out_index += 1;
         }
         while (curr_spaces < wpl) {
-            if (str_index >= strlen(str)) break;
+            if (str_index >= (int) strlen(str)) break;
             output[out_index] = str[str_index];
             out_index += 1;
             str_index += 1;
@@ -78,7 +78,7 @@ void display_test(char *str, struct sconfig *config) {
                 curr_spaces += 1;
             };
         }
-        if (str_index >= strlen(str)) break;
+        if (str_index >= (int) (strlen(str))) break;
         strcat(output, "\n");
         out_index += 1;
         curr_line += 1;
@@ -89,8 +89,8 @@ void display_test(char *str, struct sconfig *config) {
         out_index += 1;
     }
 
-    printf(output);
-    printf("\33[0m");
+    printf("%s", output);
+    printf("%s", "\33[0m");
 
     free(output);
     free(side);
@@ -124,9 +124,9 @@ void display_abort() {
 }
 
 void hide_cursor() {
-    printf("\e[?25l");
+    printf("\33[?25l");
 }
 
 void enable_cursor() {
-    printf("\e[?25h");
+    printf("\33[?25h");
 }
