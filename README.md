@@ -17,11 +17,12 @@ Alternatively you can grab the latest executable in the release tab.
 
 After running the program once, a config file is generated. You can edit the following fields:
 
-<pre>
- - `word_list_file` path to the word file, relative to the program.
- - `word_size` size of the words in bytes, 100 should be fine for most cases.
- - `test_length` Number of words in the test.
-</pre>
+| Option         | Notes  |
+|----------------|----|
+| word_list_file | path to the word file, relative to the program. |
+| word_size      | size of the words in bytes, 100 should be fine for most cases. |
+| test_length    | Number of words in the test. |
+| seed           | Used for RNG, 0 for random, used for debugging. |
 
 ## Word lists
 
