@@ -75,6 +75,7 @@ void test(struct testData *data, struct testResult *res, char *word_list, struct
 }
 
 void main_loop(struct testData *data, struct testResult *res, struct sconfig *config) {
+    memset(data->word, 0, config->word_size * config->test_length);
     int word_ptr = 0;
     int test_string_ptr = -1;
     int test_done = 0;
@@ -198,7 +199,7 @@ void calculate_results(struct testData *data, struct testResult *res) {
     for (int i = 0; i < (int) strlen(data->word) - 1; i++) {
         if (data->word[i] != data->test_string[i] && data->test_string[i] != ' ') {
             res->errors += 1;
-            // printf("%d, %c, %c\n", i, data->test_string[i], data->word[i]);
+            printf("%d, %c, %c\n", i, data->test_string[i], data->word[i]);
         }
     }
 
