@@ -25,13 +25,16 @@ void create_config(struct sconfig *config) {
 
     fptr = fopen(config->config_path, "w");
     fprintf(fptr, "# File to read words from.\n");
-    fprintf(fptr, "word_list_file=words/english_1k.txt\n\n");
+    fprintf(fptr, "word_list_file=english_1k.txt\n\n");
 
     fprintf(fptr, "# Maximum size of words in bytes.\n");
     fprintf(fptr, "word_size=100\n\n");
 
     fprintf(fptr, "# Number of words in test.\n");
-    fprintf(fptr, "test_length=25");
+    fprintf(fptr, "test_length=25\n\n");
+
+    fprintf(fptr, "# Seed for RNG, 0 for random.\n");
+    fprintf(fptr, "seed=0");
 
     fclose(fptr);
 }
@@ -66,7 +69,9 @@ void parse_config(struct sconfig *config) {
     
         if (strstr(buff, "word_size")) config->word_size = read_int(buff);
         if (strstr(buff, "test_length")) config->test_length = read_int(buff);
-    
+        int seed = read_int(buff);
+        if (strstr(buff, "seed")) (0 == seed) ? (config->seed = time(NULL)) : (config->seed = seed);
+
     }
 
     fclose(fptr);

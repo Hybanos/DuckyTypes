@@ -196,7 +196,10 @@ void calculate_results(struct testData *data, struct testResult *res) {
 
     res->errors = 0;
     for (int i = 0; i < (int) strlen(data->word) - 1; i++) {
-        if (data->word[i] != data->test_string[i] && data->test_string[i] != 32) res->errors += 1;
+        if (data->word[i] != data->test_string[i] && data->test_string[i] != ' ') {
+            res->errors += 1;
+            // printf("%d, %c, %c\n", i, data->test_string[i], data->word[i]);
+        }
     }
 
     res->accuracy = 0;

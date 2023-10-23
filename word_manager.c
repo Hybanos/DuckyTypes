@@ -11,7 +11,7 @@ char * parse_file(struct sconfig *config) {
     strcat(full_path, config->path);
     strcat(full_path, "words/");
 
-    DIR *dir = opendir(full_path);
+    DIR *dir = opendir(full_path);  
     if (!dir) {
         mkdir(full_path, 0700);
     }
@@ -20,6 +20,7 @@ char * parse_file(struct sconfig *config) {
 
     FILE *f_ptr;
     f_ptr = fopen(full_path, "r");
+    puts(full_path);
     if (!f_ptr) {
         printf("couldn't find word file help\n");
         exit(EXIT_FAILURE);
@@ -55,6 +56,7 @@ char * parse_file(struct sconfig *config) {
         }
     }
     
+    free(dir);
     free(word);
     fclose(f_ptr);
     return word_list;

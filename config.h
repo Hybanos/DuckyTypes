@@ -5,6 +5,7 @@ struct sconfig {
     int list_size;
     int word_size;
     int test_length;
+    int seed;
 };
 
 void manage_config(struct sconfig *);
