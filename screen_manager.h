@@ -7,5 +7,5 @@ void goto_origin();
 void display_test(char *, struct sconfig *);
 void display_results(struct testResult *, struct sconfig *);
 void display_abort();
-void hide_cursor();
-void enable_cursor();
+void hide_cursor(struct sconfig *config);
+void enable_cursor(struct sconfig *config);

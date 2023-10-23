@@ -20,7 +20,7 @@ char * parse_file(struct sconfig *config) {
 
     FILE *f_ptr;
     f_ptr = fopen(full_path, "r");
-    puts(full_path);
+    // puts(full_path);
     if (!f_ptr) {
         printf("couldn't find word file help\n");
         exit(EXIT_FAILURE);

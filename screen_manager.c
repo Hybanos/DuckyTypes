@@ -123,16 +123,38 @@ void display_abort() {
     printf("Test Aborted.\n\n");
 }
 
-void hide_cursor() {
-    printf("\e]11;#300a24\a");
+void hide_cursor(struct sconfig *config) {
+    printf("\e]11;#%s\a", config->test_bg_color);
     printf("\33[?25l");
-    printf("\n");
-    usleep(100000);
+    refresh_screen();
 }
 
-void enable_cursor() {
+void enable_cursor(struct sconfig *config) {
+    printf("\e]11;#%s\a", config->reset_bg_color);
     printf("\33[?25h");
-    printf("\e]11;#232627\a");
-    printf("\n");
-    usleep(100000);
+    refresh_screen();
+}
+
+void refresh_screen() {
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+    int rows = w.ws_row;
+    int cols = w.ws_col;
+
+    for (int i = 0; i < rows; i ++) {
+        printf("\33[%d;0H", i);
+        printf("|");
+        printf("\33[%d;%dH", i, cols);
+        printf("|");
+    }
+    puts("");   
+    usleep(200000);
+    for (int i = 0; i < rows; i ++) {
+        printf("\33[%d;0H", i);
+        printf(" ");
+        printf("\33[%d;%dH", i, cols);
+        printf(" ");
+    }
+
 }

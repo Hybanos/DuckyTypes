@@ -6,6 +6,8 @@ struct sconfig {
     int word_size;
     int test_length;
     int seed;
+    char *test_bg_color[7];
+    char *reset_bg_color[7];
 };
 
 void manage_config(struct sconfig *);

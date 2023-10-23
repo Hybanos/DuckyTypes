@@ -26,9 +26,11 @@ int main() {
     struct testResult res;
 
     prep_console(&new_kbd_mode, &g_old_kbd_mode);
-    
+    hide_cursor(&config);
     test(&data, &res, word_list, &config);
     reset_console(&g_old_kbd_mode);
+    enable_cursor(&config);
+    // clear_screen();
 
     free(word_list);
     free(data.test_string);

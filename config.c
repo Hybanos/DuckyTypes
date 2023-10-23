@@ -34,7 +34,13 @@ void create_config(struct sconfig *config) {
     fprintf(fptr, "test_length=25\n\n");
 
     fprintf(fptr, "# Seed for RNG, 0 for random.\n");
-    fprintf(fptr, "seed=0");
+    fprintf(fptr, "seed=0\n\n");
+    
+    fprintf(fptr, "# Background color during test , hex rrggbb format.\n");
+    fprintf(fptr, "test_bg_color=300a24\n\n");
+
+    fprintf(fptr, "# Background color after test , hex rrggbb format.\n");
+    fprintf(fptr, "reset_bg_color=232627\n\n");
 
     fclose(fptr);
 }
@@ -72,6 +78,8 @@ void parse_config(struct sconfig *config) {
         int seed = read_int(buff);
         if (strstr(buff, "seed")) (0 == seed) ? (config->seed = time(NULL)) : (config->seed = seed);
 
+        if (strstr(buff, "test_bg_color")) read_str(buff, config->test_bg_color);
+        if (strstr(buff, "reset_bg_color")) read_str(buff, config->reset_bg_color);
     }
 
     fclose(fptr);
