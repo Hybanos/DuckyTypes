@@ -199,7 +199,6 @@ void calculate_results(struct testData *data, struct testResult *res) {
     for (int i = 0; i < (int) strlen(data->word) - 1; i++) {
         if (data->word[i] != data->test_string[i] && data->test_string[i] != ' ') {
             res->errors += 1;
-            printf("%d, %c, %c\n", i, data->test_string[i], data->word[i]);
         }
     }
 

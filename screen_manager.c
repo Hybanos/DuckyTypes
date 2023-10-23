@@ -124,9 +124,15 @@ void display_abort() {
 }
 
 void hide_cursor() {
+    printf("\e]11;#300a24\a");
     printf("\33[?25l");
+    printf("\n");
+    usleep(100000);
 }
 
 void enable_cursor() {
     printf("\33[?25h");
+    printf("\e]11;#232627\a");
+    printf("\n");
+    usleep(100000);
 }

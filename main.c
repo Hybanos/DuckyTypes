@@ -26,21 +26,16 @@ int main() {
     struct testResult res;
 
     prep_console(&new_kbd_mode, &g_old_kbd_mode);
+    
     test(&data, &res, word_list, &config);
     reset_console(&g_old_kbd_mode);
 
     free(word_list);
-    free(&config);
     free(data.test_string);
     free(data.test_data);
     free(data.word);
     free(config.path);
     free(config.config_path);
-    a();
 
     return EXIT_SUCCESS;
-}
-
-void a() {
-
 }

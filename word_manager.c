@@ -45,7 +45,6 @@ char * parse_file(struct sconfig *config) {
 
     for (int i = 0; i < config->list_size; i++) {
         fgets(word, config->word_size, f_ptr);
-        puts(word);
         
         for (int j = 0; j < config->word_size; j++) {
             if (word[j] == '\n') {
